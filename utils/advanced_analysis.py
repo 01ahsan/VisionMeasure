@@ -140,15 +140,19 @@ def hough_line_detection(gray_image, threshold=80, min_length=50, max_gap=10):
     results = []
     if lines is not None:
         for line in lines:
-            x1, y1, x2, y2 = line[0]
-            length = np.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
-            angle = np.degrees(np.arctan2(y2 - y1, x2 - x1))
-            results.append({
-                "start": (x1, y1),
-                "end": (x2, y2),
-                "length_px": length,
-                "angle_deg": angle,
-            })
+            try:
+                coords = line[0] if len(line.shape) > 1 else line
+                x1, y1, x2, y2 = int(coords[0]), int(coords[1]), int(coords[2]), int(coords[3])
+                length = np.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+                angle = np.degrees(np.arctan2(y2 - y1, x2 - x1))
+                results.append({
+                    "start": (x1, y1),
+                    "end": (x2, y2),
+                    "length_px": length,
+                    "angle_deg": angle,
+                })
+            except (IndexError, ValueError, TypeError):
+                continue
 
     return results
 
